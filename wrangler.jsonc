@@ -1,0 +1,31 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "jdawgs-proof-desk",
+  "main": "src/server.ts",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "ai": { "binding": "AI" },
+  "vars": {
+    // What your agent does: the system prompt for every paid question.
+    "AGENT_PROMPT": "You are the J-Dawgs Proof Desk for J-Dawgs Industries (Springfield, Missouri). Answer questions about our software tools, games, and services, and explain how to verify a product before paying: look for a public proof page with real test runs, hits and misses both. Keep answers clear and short. When you don't know something, say so — never invent facts.",
+    // Any Workers AI text-generation model: https://developers.cloudflare.com/workers-ai/models/
+    "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct-fp8-fast",
+    // Price per question, in the token's smallest unit (sats for sBTC, microSTX for STX).
+    "PRICE": "10",
+    "TOKEN": "sBTC",
+    "STACKS_NETWORK": "mainnet",
+    // Address that receives payments for /ask and the paid MCP tool.
+    "PAY_TO": "SPK2W4Q2NCXXRJ9WPBH9XZSAF7G20KB7GMC1EZ41",
+    "MAX_SATS_PER_PAYMENT": "1000"
+  },
+  // Secrets (wrangler secret put / .dev.vars):
+  //   WALLET_KEK         32 random bytes, base64. Encrypts each agent's key.
+  //   PAYER_PRIVATE_KEY  optional, dev only: pay from a funded wallet instead.
+  "durable_objects": {
+    "bindings": [
+      { "class_name": "PaidMCP", "name": "PaidMCP" },
+      { "class_name": "StacksAgent", "name": "StacksAgent" }
+    ]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["PaidMCP", "StacksAgent"] }]
+}
